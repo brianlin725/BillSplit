@@ -1,4 +1,4 @@
-class Person():
+class Person:
     def __init__(self, name, items=None):
         self.name = name
         self.items = items
