@@ -125,3 +125,5 @@ class AddItemMenu:
                                         values = (i.getName(), i.getQuantity(), i.getPrice()))
 
         self.master.update()
+
+        self.window.destroy()

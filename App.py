@@ -3,7 +3,9 @@ from tkinter import *
 from tkinter import ttk
 import customtkinter
 from subMenu.AddItemMenu import AddItemMenu
+from subMenu.AddPerson import AddPerson
 from Person import Person
+from Tab import Tab
 from Item import Item
 
 class App(customtkinter.CTk):
@@ -16,6 +18,7 @@ class App(customtkinter.CTk):
         super().__init__()
         self.people = []
         self.items = []
+        self.tabs = []
 
         self.title("Main Test")
         self.geometry(f"{App.WIDTH}x{App.HEIGHT}")
@@ -37,13 +40,7 @@ class App(customtkinter.CTk):
         frameMain.grid_columnconfigure(0, weight=1)
         frameMain.grid_rowconfigure(0, weight=1)
 
-        frameTest = customtkinter.CTkFrame(self.notebook, width=450, corner_radius=5)
-        frameTest.grid(row=0, column=1, sticky="nswe", padx=15, pady=15)
-        frameTest.grid_columnconfigure(0, weight=1)
-        frameTest.grid_rowconfigure(0, weight=1)
-
         self.notebook.add(frameMain, text = "Main")
-        self.notebook.add(frameTest, text="Test")
 
         self.notebook.grid(row = 0, column = 1, sticky = "nswe", padx = 20, pady = 10)
 
@@ -69,7 +66,7 @@ class App(customtkinter.CTk):
         self.itemTree.insert(parent = "", index = "end", iid = 0, values = ("name", "qu", "p"))
 
         # Add person
-        self.buttonInsert = customtkinter.CTkButton(frameLeft, text = "Add Person", command = self.addItemWindow,
+        self.buttonInsert = customtkinter.CTkButton(frameLeft, text = "Add Person", command = self.addPersonWindow,
                                                     fg_color=self.BTN_COLOR, hover_color=self.BTN_HOVER,
                                                     corner_radius=0, height=35)
         self.buttonInsert.grid(row = 0, column = 0, padx = 0, pady = (16,0))
@@ -99,17 +96,9 @@ class App(customtkinter.CTk):
         self.buttonScan.grid(row=4, column=0, padx=0, pady=0)
 
     def add_tab(self, name):
-        toAdd = customtkinter.CTkFrame(self.notebook, width=450, corner_radius=5)
-        toAdd.grid(row=0, column=0, sticky="nswe", padx=15, pady=15)
-        toAdd.grid_columnconfigure(0, weight=1)
-        toAdd.grid_rowconfigure(0, weight=1)
-
-        self.notebook.add(toAdd, text=name)
-        self.notebook.update()
+        self.tabs.append(Tab(self, name))
 
     def addItemWindow(self):
-        self.people = [Person("Name1"), Person("Nammme3"), Person("AMU")]
-
         self.addItemWindow = AddItemMenu(self, self.people)
 
         #itm = self.addItemWindow.getItem()
@@ -117,7 +106,7 @@ class App(customtkinter.CTk):
         #print(itm.getPeople())
 
     def addPersonWindow(self):
-        pass
+        self.addPerson = AddPerson(self)
 
     def on_closing(self):
         self.destroy()
