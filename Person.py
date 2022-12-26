@@ -1,11 +1,15 @@
 class Person:
     def __init__(self, name, items=None):
+        if items is None:
+            items = []
         self.name = name
         self.items = items
 
     # Equals based on the name
     def __eq__(self, other):
-        return self.name == other.name
+        if isinstance(other, Person):
+            return self.name == other.name
+        return self.name == other
 
     # return methods
     def getName(self):
@@ -24,3 +28,6 @@ class Person:
     # Set method
     def setName(self, name):
         self.name = name
+
+    def __str__(self):
+        return self.name
