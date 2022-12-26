@@ -15,6 +15,8 @@ class Tab:
         self.frame.grid_columnconfigure(0, weight=1)
         self.frame.grid_rowconfigure(0, weight=1)
 
+        self.frame.bind("<Delete>", lambda: self.deleteTab())
+
         self.master.notebook.add(self.frame, text=name)
         self.master.notebook.update()
 
@@ -80,3 +82,6 @@ class Tab:
 
     def updateStat(self):
         pass
+
+    def deleteTab(self, e):
+        print(e)

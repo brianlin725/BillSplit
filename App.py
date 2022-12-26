@@ -7,7 +7,8 @@ from subMenu.AddPerson import AddPerson
 from Person import Person
 from Tab import Tab
 from Item import Item
-import re
+from tkinter import messagebox
+from utils import RemoveTab
 
 class App(customtkinter.CTk):
     WIDTH = 900
@@ -26,9 +27,13 @@ class App(customtkinter.CTk):
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         customtkinter.set_appearance_mode("Light")
 
+        # binding event
+        self.bind("<Delete>", self.delTab)
+
         # setting column and row weight
         self.grid_columnconfigure(1, weight = 1)
         self.grid_rowconfigure(0, weight = 1)
+
 
         frameLeft = customtkinter.CTkFrame(self, width = 180, corner_radius = 0)
         frameLeft.grid(row = 0, column = 0, sticky = "nswe")
@@ -46,9 +51,9 @@ class App(customtkinter.CTk):
         self.notebook.grid(row = 0, column = 1, sticky = "nswe", padx = 20, pady = 10)
 
         #Treeview
-        self.itemTree = ttk.Treeview(frameMain, selectmode = "browse")
+        self.itemTree = ttk.Treeview(frameMain, selectmode = "extended")
         self.itemTree["columns"] = ["item", "quantity", "price"]
-        ttk.Style().configure("TreeviewItem", rowheight = 30)
+        ttk.Style().configure("TreeviewItem", rowheight = 35)
 
         # formatting column
         self.itemTree.column("#0", width=0, stretch=NO)
@@ -61,10 +66,10 @@ class App(customtkinter.CTk):
         self.itemTree.heading("item", text="Item", anchor=W)
         self.itemTree.heading("quantity", text="Quantity", anchor=E)
         self.itemTree.heading("price", text="Total Price", anchor=E)
+        self.itemTree.tag_configure('noPeople', background="#eceeef", )
 
         # Grid the Tree
         self.itemTree.grid(row = 0, column = 0, sticky = "nswe", padx = 10, pady = 10)
-        self.itemTree.insert(parent = "", index = "end", iid = 0, values = ("name", "qu", "p"))
 
         # Add person
         self.buttonInsert = customtkinter.CTkButton(frameLeft, text = "Add Person", command = self.addPersonWindow,
@@ -192,7 +197,22 @@ class App(customtkinter.CTk):
             # update tax
             tab.taxLabelVar.set(f"Tax: {round(float(self.taxEntry.get()),2)}%")
 
+    def delTab(self, e):
+        if len(self.itemTree.selection()) == 0:
+            # Deletes tab
+            index = self.notebook.index(self.notebook.select())
 
+            # Check if this is the main tab
+            if index == 0:
+                return
 
+            # Double check
+            response = messagebox.askyesno("info", "Remove person?")
+            if response != 1:
+                return
 
+            RemoveTab.removeTabHelper(self, index, self.notebook.tab(index)["text"])
+        else:
+            # Deletes Item
+            print(self.itemTree.selection())
 

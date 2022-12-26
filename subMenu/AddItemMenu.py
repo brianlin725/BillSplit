@@ -2,6 +2,7 @@ import tkinter
 import customtkinter
 from tkinter import *
 from Item import Item
+from tkinter import messagebox
 
 
 class AddItemMenu:
@@ -84,8 +85,31 @@ class AddItemMenu:
                                                                           pady=5,
                                                                           sticky="w")
 
+        self.window.bind("<Return>", self.updateTreeview)
+        self.window.bind("<Escape>", self.destroy)
+
     # Creates an Item of the things inside
-    def updateTreeview(self):
+    def updateTreeview(self, event=None):
+        # check if name is empty
+        if len(self.entryName.get()) == 0:
+            response = messagebox.showinfo("info", "Item name entry is empty")
+            return
+
+        # Validate Quantity
+        if len(self.entryQuantity.get()) == 0 or not self.entryQuantity.get().isnumeric():
+            response = messagebox.showinfo("info", "Please enter a valid quantity")
+            return
+
+        # Validate Price
+        if len(self.entryPrice.get()) != 0:
+            try:
+                float(self.entryPrice.get())
+            except ValueError:
+                response = messagebox.showinfo("info", "Please enter a valid Price")
+                return
+        else:
+            response = messagebox.showinfo("info", "Please enter a valid Price")
+            return
 
         global taxPercentageFloat
         taxPercentageFloat = 1
@@ -113,7 +137,14 @@ class AddItemMenu:
             self.master.itemTree.delete(i)
 
         for i in self.master.items:
-            self.master.itemTree.insert(parent="",
+            if len(i.getPeople()) == 0:
+                self.master.itemTree.insert(parent="",
+                                            index="end",
+                                            iid=self.master.items.index(i),
+                                            values=(i.getName(), i.getQuantity(), float(i.getPrice())),
+                                            tags=("noPeople",))
+            else:
+                self.master.itemTree.insert(parent="",
                                         index="end",
                                         iid=self.master.items.index(i),
                                         values=(i.getName(), i.getQuantity(), float(i.getPrice())))
@@ -142,7 +173,7 @@ class AddItemMenu:
                     totPrice = 0.0
                     # Add everything back
                     for item in range(len(itms)):
-                        price = float("{:.2f}".format(float(itms[item].getPrice())/num))
+                        price = float("{:.2f}".format(float(itms[item].getPrice()) / num))
                         i.tree.insert(parent="", index="end", iid=item,
                                       values=(itms[item].getName(), itms[item].getQuantity(), price))
 
@@ -173,4 +204,7 @@ class AddItemMenu:
         # Update item count
         self.master.numLabelVar.set(f"Items: {len(self.master.itemTree.get_children())}")
 
+        self.window.destroy()
+
+    def destroy(self, e=None):
         self.window.destroy()

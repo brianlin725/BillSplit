@@ -22,11 +22,12 @@ class AddPerson:
                                                     fg_color="#bdbebe",
                                                     hover_color="#8d8e8d",
                                                     command=self.insertEvent,
-                                                    width = 80)
-        self.insertButton.grid(row = 0, column = 1, padx = 5, pady = 5, sticky = "nswe")
+                                                    width=80)
+        self.insertButton.grid(row=0, column=1, padx=5, pady=5, sticky="nswe")
         self.window.bind("<Return>", self.insertEvent)
+        self.window.bind("<Escape>", self.destroy)
 
-    def insertEvent(self, e = None):
+    def insertEvent(self, e=None):
         name = self.nameEntry.get()
         if len(name) == 0:
             response = messagebox.showinfo("info", "Name entry is empty")
@@ -40,4 +41,7 @@ class AddPerson:
         self.master.people.append(Person(name))
         self.master.add_tab(name)
 
+        self.window.destroy()
+
+    def destroy(self, e=None):
         self.window.destroy()
