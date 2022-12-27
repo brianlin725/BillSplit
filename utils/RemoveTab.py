@@ -61,3 +61,11 @@ def removeTabHelper(master, index, name):
         tab.priceLabelVar.set(f"Price: $ {round(totPrice, 2)}")
 
     # Gray out non-claimed items
+    for row in master.itemTree.get_children():
+        for item in master.items:
+            if item.name == master.itemTree.item(row)["values"][0]:
+                if len(item.getPeople()) == 0:
+                    master.itemTree.item(row, tags=("noPeople",))
+                    break
+
+    master.itemTree.update()

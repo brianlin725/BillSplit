@@ -111,6 +111,12 @@ class AddItemMenu:
             response = messagebox.showinfo("info", "Please enter a valid Price")
             return
 
+        # Check if item name already exist
+        for i in self.master.items:
+            if i.getName() == self.entryName.get():
+                response = messagebox.showinfo("info", "Item already exist")
+                return
+
         global taxPercentageFloat
         taxPercentageFloat = 1
         checked = []
@@ -187,6 +193,7 @@ class AddItemMenu:
                         taxPercentageFloat = float(self.master.taxEntry.get().strip("%")) / 100 + 1
 
                     totPrice *= float("{:.2f}".format(taxPercentageFloat))
+                    totPrice = float("{:.2f}".format(totPrice))
                     i.priceLabelVar.set(f"Price: ${totPrice}")
 
                     # Update item count
@@ -200,6 +207,7 @@ class AddItemMenu:
             totPrice += float("{:.2f}".format(float(item.getPrice())))
 
         totPrice *= float("{:.2f}".format(taxPercentageFloat))
+        totPrice = float("{:.2f}".format(totPrice))
         self.master.priceLabelVar.set(f"Price: ${totPrice}")
         # Update item count
         self.master.numLabelVar.set(f"Items: {len(self.master.itemTree.get_children())}")

@@ -1,14 +1,13 @@
 import tkinter
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import customtkinter
 from subMenu.AddItemMenu import AddItemMenu
 from subMenu.AddPerson import AddPerson
 from Person import Person
 from Tab import Tab
 from Item import Item
-from tkinter import messagebox
-from utils import RemoveTab
+from utils import RemoveTab, RemoveItem
 
 class App(customtkinter.CTk):
     WIDTH = 900
@@ -66,10 +65,15 @@ class App(customtkinter.CTk):
         self.itemTree.heading("item", text="Item", anchor=W)
         self.itemTree.heading("quantity", text="Quantity", anchor=E)
         self.itemTree.heading("price", text="Total Price", anchor=E)
-        self.itemTree.tag_configure('noPeople', background="#eceeef", )
+        self.itemTree.tag_configure('noPeople', background="#eceeef")
 
         # Grid the Tree
         self.itemTree.grid(row = 0, column = 0, sticky = "nswe", padx = 10, pady = 10)
+
+        # Scrollbar for the tree
+        scrollbar = customtkinter.CTkScrollbar(frameMain, command = self.itemTree.yview, fg_color=self.BTN_COLOR)
+        scrollbar.grid(row = 0, column = 1, sticky = "ns")
+        self.itemTree.configure(yscrollcommand=scrollbar.set)
 
         # Add person
         self.buttonInsert = customtkinter.CTkButton(frameLeft, text = "Add Person", command = self.addPersonWindow,
@@ -84,13 +88,13 @@ class App(customtkinter.CTk):
         self.buttonAdd.grid(row=1, column=0, padx=0, pady=0)
 
         # Remove Item
-        self.buttonRemove = customtkinter.CTkButton(frameLeft, text="Remove Item", command=None,
+        self.buttonRemove = customtkinter.CTkButton(frameLeft, text="Remove Item", command=self.delTab,
                                                     fg_color=self.BTN_COLOR, hover_color=self.BTN_HOVER,
                                                     corner_radius=0, height=35)
         self.buttonRemove.grid(row=2, column=0, padx=0, pady=0)
 
         # Remove All
-        self.buttonRemoveAll = customtkinter.CTkButton(frameLeft, text="Remove All", command=None,
+        self.buttonRemoveAll = customtkinter.CTkButton(frameLeft, text="Remove All", command=self.removeAll,
                                                        fg_color=self.BTN_COLOR, hover_color=self.BTN_HOVER,
                                                        corner_radius=0, height=35)
         self.buttonRemoveAll.grid(row=3, column=0, padx=0, pady=0)
@@ -197,8 +201,22 @@ class App(customtkinter.CTk):
             # update tax
             tab.taxLabelVar.set(f"Tax: {round(float(self.taxEntry.get()),2)}%")
 
-    def delTab(self, e):
-        if len(self.itemTree.selection()) == 0:
+    # Function deletes tab and items according to selections
+    def delTab(self, e=None):
+        # Finds the current tab
+        index = self.notebook.index(self.notebook.select())
+
+        name = self.notebook.tab(self.notebook.select(), "text")
+        tree = None
+
+        if index == 0:
+            tree = self.itemTree
+        else:
+            for t in self.tabs:
+                if t.name == name:
+                    tree = t.tree
+
+        if len(tree.selection()) == 0:
             # Deletes tab
             index = self.notebook.index(self.notebook.select())
 
@@ -214,5 +232,20 @@ class App(customtkinter.CTk):
             RemoveTab.removeTabHelper(self, index, self.notebook.tab(index)["text"])
         else:
             # Deletes Item
-            print(self.itemTree.selection())
+            RemoveItem.removeItemHelper(self, self.notebook.index(self.notebook.select()), self.itemTree.selection())
 
+    def removeAll(self, e = None):
+        # Finds the current tab
+        index = self.notebook.index(self.notebook.select())
+
+        name = self.notebook.tab(self.notebook.select(), "text")
+        tree = None
+
+        if index == 0:
+            tree = self.itemTree
+        else:
+            for t in self.tabs:
+                if t.name == name:
+                    tree = t.tree
+
+        RemoveItem.removeAllHelper(self, self.notebook.index(self.notebook.select()), self.itemTree.selection())

@@ -15,8 +15,6 @@ class Tab:
         self.frame.grid_columnconfigure(0, weight=1)
         self.frame.grid_rowconfigure(0, weight=1)
 
-        self.frame.bind("<Delete>", lambda: self.deleteTab())
-
         self.master.notebook.add(self.frame, text=name)
         self.master.notebook.update()
 
@@ -37,6 +35,11 @@ class Tab:
         self.tree.heading("price", text="Total Price", anchor=E)
 
         self.tree.grid(row=0, column=0, sticky="nswe", padx=10, pady=10)
+
+        # Scrollbar for the tree
+        scrollbar = customtkinter.CTkScrollbar(self.frame, command=self.tree.yview, fg_color=self.master.BTN_COLOR)
+        scrollbar.grid(row=0, column=1, sticky="ns")
+        self.tree.configure(yscrollcommand=scrollbar.set)
 
         # Stats
         self.frameStat = customtkinter.CTkFrame(self.frame, width=450, corner_radius=5, height=50)
@@ -82,6 +85,3 @@ class Tab:
 
     def updateStat(self):
         pass
-
-    def deleteTab(self, e):
-        print(e)
